@@ -8,6 +8,7 @@
   "name": "functional-text",
   "version": "0.1.0",
   "main": "build/bundle.js",
+  "description": "Text markup language. As extensible as XML. As human-friendly as Markdown. As programmable as Javascript.",
   "dependencies": {
     "lodash.assign": "^3.0.0",
     "lodash.flattendeep": "^3.0.2"
