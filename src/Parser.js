@@ -173,6 +173,25 @@ class Parser {
             return this.newResult(parsed, stopTail);
         }
     }
+    parseFlat(raw, stopRegex) {
+        if (raw === undefined || raw === null) {
+            error("raw is undefined");
+        }
+
+        let stopHead, stopTail;
+
+        ifRegex(raw, stopRegex, (matchResult) => {
+            stopHead = matchResult.before;
+            stopTail = matchResult.after;
+        });
+
+
+        if (stopHead !== undefined) {
+            return this.newResult(stopHead, stopTail);
+        } else {
+            error("unbounded function call");
+        }
+    }
     _callFun(name, raw, stopRegex) {
         if (typeof this._Functions[name] !== 'function') error(`unknown function: ${name}`);
         return this._Functions[name].call(this, raw, stopRegex);
