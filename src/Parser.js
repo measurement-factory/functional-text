@@ -5,8 +5,6 @@ import assign from "lodash.assign";
 import TextItem from "./TextItem";
 import ParsedItem from "./ParsedItem";
 
-let funDepth = 0;
-
 function error(msg) {
     throw new Error(msg);
 }
@@ -48,15 +46,6 @@ function ifRegex(str, regex, callback) {
 function escapeRegexp(str) {
     return str.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
 }
-
-// function indentedLogger(...messages) {
-//     let indent = funDepth * 4;
-//     console.log(" ".repeat(indent), ...messages);
-// }
-
-// function wrapString(str) {
-//     return `"${str.replace(/\n/g, "\\n")}"`;
-// }
 
 function filterParsed(...parsedItems) {
     return parsedItems.filter(item => {
@@ -197,7 +186,6 @@ class Parser {
         return this._Functions[name].call(this, raw, stopRegex);
     }
     _parseFun(name, raw) {
-        funDepth += 1;
         if (name === undefined) confess("name is undefined");
         if (raw === undefined) confess("raw is undefined");
 
@@ -224,10 +212,6 @@ class Parser {
         if (stopRegex === undefined) error(`impossible function call delimiter after .${name}, stopped`);
 
         let val = this._callFun(name, raw, stopRegex);
-        // figure out where new lines are being eaten
-        // indentedLogger(name, "raw", wrapString(raw));
-        // indentedLogger(name, "parsed", wrapString(val.parsed.toString().substr(-15)));
-        funDepth -= 1;
         return val;
     }
 }
