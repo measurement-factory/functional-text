@@ -8,6 +8,7 @@
     },
     "rules": {
         "esnext": true,
+        "new-cap": false,
         "strict": false,
         "quotes": false,
         "curly": false,
