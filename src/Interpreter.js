@@ -267,9 +267,14 @@ export default class Interpreter {
             }
         }
 
-        let boundary = this.consumeBoundary();
-        if (!boundary)
-            this.inputStream.croak("Missing function call boundary");
+        // Allow a space between the function call and the first boundary:
+        // .foo { } is equivalent to .foo{}
+        Must(this.inputStream.consumeOptionalWhitespace());
+        let whitespaceBoundary = this.inputStream.consumed ?
+            new BoundarySpace(this.inputStream.consumed) : null;
+        let boundary = this.consumeBoundary() || whitespaceBoundary;
+
+        if (!boundary) this.inputStream.croak("Missing function call boundary");
 
         this.callFunction(name, boundary, args);
         this.inputStream.sawFunctionCall = true;
