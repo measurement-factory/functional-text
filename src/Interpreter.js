@@ -1,5 +1,5 @@
 import "babel/polyfill";
-import {assert as Must} from "chai";
+import Must from "assert";
 import log from "./logger";
 import * as functionRegistry from "./functionRegistry";
 
