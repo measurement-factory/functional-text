@@ -12,9 +12,6 @@
   "dependencies": {
     "babel": "^5.4.3"
   },
-  "scripts": {
-    "postinstall": "make build-core"
-  },
   "name": "functional-text",
   "version": "0.0.1",
   "main": "./lib/index.js",
