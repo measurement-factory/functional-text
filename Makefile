@@ -7,8 +7,12 @@ TEST_OUT_DIR=lib/tests
 
 .PHONY: build watch-build clean-build test
 
-build: clean-build
+build: clean-build build-core build-tests
+
+build-core:
 	$(BABEL_CMD) $(SRC_DIR)  --out-dir $(SRC_OUT_DIR)
+
+build-tests:
 	$(BABEL_CMD) $(TEST_DIR) --out-dir $(TEST_OUT_DIR)
 
 watch-build: clean-build
