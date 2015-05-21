@@ -1,4 +1,4 @@
-BABEL_CMD=node node_modules/babel/bin/babel --copy-files --source-maps inline
+BABEL_CMD=node node_modules/babel/bin/babel --copy-files --source-maps inline --optional es7.exportExtensions
 SRC_DIR=src
 TEST_DIR=tests
 
