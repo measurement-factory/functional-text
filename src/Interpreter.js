@@ -27,7 +27,7 @@ class BoundaryDot extends Boundary {
 
 class BoundarySpace extends Boundary {
     reached(inputStream) {
-        return inputStream.sawWordBoundary();
+        return inputStream.atWordBoundary();
     }
 }
 
@@ -102,7 +102,7 @@ export default class Interpreter {
             }
 
             let peekingStream = this.inputStream.peek();
-            if (callFunctions && peekingStream.consumeDot() && peekingStream.consumeWord()) {
+            if (callFunctions && peekingStream.consumeFunctionCall()) {
                 // this is a function call
 
                 log("found function call");

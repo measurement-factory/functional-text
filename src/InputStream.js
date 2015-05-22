@@ -60,7 +60,7 @@ export default class InputStream { /// XXX: Should have a context (file/function
             // Will return even when the regex is empty (empty string match)
             let result = condition.exec(this.input.slice(this.char));
             if (result && result.index === 0) {
-                this._log(`consumed "${result[0].replace(/\n/g, "\\n")}" with /${condition}/`);
+                this._log(`consumed "${result[0].replace(/\n/g, "\\n")}" with ${condition}`);
                 this.char += result[0].length; // the length of the match
                 this.consumed = result[0];
                 this._incrementHumanizedPosition();
@@ -80,13 +80,17 @@ export default class InputStream { /// XXX: Should have a context (file/function
         this.consumed = other.consumed;
         this.sawFunctionCall = other.sawFunctionCall;
     }
-    sawWordBoundary() {
-        if (this.sawFunctionCall) return true;
-
-        return this.peek().consume(/\W/) || this.atEnd();
+    peek() {
+        return this.clone();
+    }
+    croak(msg) {
+        throw new Error(`${msg} at ${this.line}:${this.col} (${this.char})`);
     }
     sawNewLine() {
         return (this.consumed && this.consumed.endsWith("\n")) || this.atEnd();
+    }
+    consumeFunctionCall() {
+        return this.consumeDot() && this.consumeWord();
     }
     consumeDot() {
         return this.consume(".");
@@ -106,11 +110,10 @@ export default class InputStream { /// XXX: Should have a context (file/function
     consumeOther() {
         return this.consumeChar(); // TODO: Optimize: consume more?
     }
-    peek() {
-        return this.clone();
-    }
-    croak(msg) {
-        throw new Error(`${msg} at ${this.line}:${this.col} (${this.char})`);
+    atWordBoundary() {
+        if (this.sawFunctionCall) return true;
+        let peekingStream = this.peek();
+        return (!peekingStream.consumeFunctionCall() && peekingStream.consume(/\W/)) || this.atEnd();
     }
     atEnd() {
         return this.char >= this.input.length;
