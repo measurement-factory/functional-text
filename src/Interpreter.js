@@ -166,17 +166,17 @@ export default class Interpreter {
      * If boundary is consumed, returns Boundary,
      * otherwise, returns null *without side effects*.
      */
-    consumeBoundary() {
+    consumeBoundary(afterSpace = false) {
         let peekingStream = this.inputStream.peek();
         let boundary;
 
-        if (peekingStream.consume(".")) {
+        if (!afterSpace && peekingStream.consume(".")) {
             boundary = new BoundaryDot(peekingStream.consumed);
         }
         else if (peekingStream.consume(/\s/)) {
             boundary = new BoundarySpace(peekingStream.consumed);
         }
-        else if (peekingStream.consume(/:+/)) {
+        else if (!afterSpace && peekingStream.consume(/:+/)) {
             let consumed = peekingStream.consumed;
             let colonCount = consumed.length;
 
@@ -274,7 +274,7 @@ export default class Interpreter {
         Must(this.inputStream.consumeOptionalWhitespace());
         let whitespaceBoundary = this.inputStream.consumed ?
             new BoundarySpace(this.inputStream.consumed) : null;
-        let boundary = this.consumeBoundary() || whitespaceBoundary;
+        let boundary = this.consumeBoundary(this.inputStream.consumed) || whitespaceBoundary;
 
         if (!boundary) this.inputStream.croak("Missing function call boundary");
 
