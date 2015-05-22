@@ -132,7 +132,7 @@ export class Parsed {
 
 function tag(callName, args, functionBody) {
     let htmlArgs = Object.keys(args.byName).map(argName => {
-            return `${argName}="${args.byName[argName].replace(/"/g, "\"")}"`;
+            return `${argName}="${args.byName[argName].toString().replace(/"/g, "\"")}"`;
         }).join(" ");
 
     return [

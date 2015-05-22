@@ -19,7 +19,7 @@ process.stdin.on("end", function() {
 
         return [
             new interpreterUtils.PlainText(
-                parse(fs.readFileSync(args.byName.file).toString())
+                parse(fs.readFileSync(args.byName.file.toString()).toString())
             )
         ];
     });
@@ -29,7 +29,7 @@ process.stdin.on("end", function() {
 
         return [
             new interpreterUtils.PlainText(
-                fs.readFileSync(args.byName.file).toString()
+                fs.readFileSync(args.byName.file.toString()).toString()
             )
         ];
     });
