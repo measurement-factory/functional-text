@@ -1,5 +1,9 @@
 import "babel/polyfill";
 import Must from "assert";
+import {
+    encode as encodeHtmlEntities,
+    decode as decodeHtmlEntities
+} from "he";
 import log from "./logger";
 import * as functionRegistry from "./functionRegistry";
 
@@ -78,14 +82,43 @@ export class HTMLClose extends ParseItem {
         this.value = `</${value}>`;
     }
 }
-export class PlainText extends ParseItem {}
+export class PlainText extends ParseItem {
+    constructor() {
+        super(...arguments);
+        this.sanitizeValue();
+    }
+    add(text) {
+        this.value += text;
+        this.sanitizeValue();
+    }
+    sanitizeValue() {
+        this.value = encodeHtmlEntities(
+            decodeHtmlEntities(this.value),
+            { useNamedReferences: true }
+        );
+    }
+}
 
 export class Parsed {
     constructor(...items) {
         this.items = items;
     }
+    _lastItem() {
+        return this.items[this.items.length - 1];
+    }
     push(...items) {
-        this.items.push(...items);
+        for (let item of items) {
+            if (item instanceof PlainText) {
+                let lastItem = this._lastItem();
+                if (lastItem instanceof PlainText) {
+                    lastItem.add(item.value);
+                } else {
+                    this.items.push(item);
+                }
+            } else {
+                this.items.push(item);
+            }
+        }
     }
     toString() {
         return this.items.join("");
