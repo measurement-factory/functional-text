@@ -86,7 +86,7 @@ export default class Interpreter {
                 log("Reached boundary:", boundary);
                 return true;
             } else {
-                return false || this.inputStream.atEnd();
+                return false;
             }
         };
 
@@ -95,8 +95,10 @@ export default class Interpreter {
         while (!reachedBoundary()) {
             log("\niteration starting: ", myInterpretCallId, "with stream", this.inputStream.id);
 
-            if (this.inputStream.atEnd() && boundary) {
-                this.inputStream.croak("Unbounded function call");
+            if (this.inputStream.atEnd()) {
+                if (boundary) this.inputStream.croak("Unbounded function call");
+
+                break;
             }
 
             let peekingStream = this.inputStream.peek();
@@ -112,7 +114,7 @@ export default class Interpreter {
             }
             // Just text (one char at a time), not a function call
             else {
-                this.inputStream.consumeChar();
+                Must(this.inputStream.consumeChar());
                 this.interpretText(this.inputStream.consumed);
             }
 
