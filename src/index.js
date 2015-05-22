@@ -3,6 +3,7 @@ import InputStream from "./InputStream";
 
 export Interpreter from "./Interpreter";
 export InputStream from "./InputStream";
+export * as interpreterUtils from "./Interpreter";
 export * as functionRegistry from "./functionRegistry";
 
 export default function run(input) {

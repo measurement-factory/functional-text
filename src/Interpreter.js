@@ -49,15 +49,51 @@ class BoundaryEOF extends Boundary {
     }
 }
 
-const Borders = {
-    '{': '}',
-    '[': ']',
-    '<': '>'
-};
 class BoundaryOther extends Boundary {
     reached(inputStream) {
+        const Borders = {
+            '{': '}',
+            '[': ']',
+            '<': '>'
+        };
         let delimiter = Borders[this.value] ? Borders[this.value] : this.value;
         return inputStream.consume(delimiter);
+    }
+}
+
+export class ParseItem {
+    constructor(value) {
+        this.type = this.constructor.name;
+        this.value = value;
+    }
+    toString() {
+        return this.value;
+    }
+}
+
+export class HTMLOpen extends ParseItem {}
+export class HTMLClose extends ParseItem {
+    constructor(value) {
+        super();
+        this.value = `</${value}>`;
+    }
+}
+export class PlainText extends ParseItem {}
+
+export class Parsed {
+    constructor(...items) {
+        this.items = items;
+    }
+    push(...items) {
+        this.items.push(...items);
+    }
+    toString() {
+        return this.items.join("");
+    }
+
+    // allows spreading of Parsed
+    [Symbol.iterator]() {
+        return this.items.values();
     }
 }
 
@@ -66,15 +102,18 @@ function tag(callName, args, functionBody) {
             return `${argName}="${args.byName[argName].replace(/"/g, "\"")}"`;
         }).join(" ");
 
-    let result = `<${callName}${htmlArgs.length > 0 ? " " : ""}${htmlArgs}>${functionBody}</${callName}>`;
-    return result;
+    return new Parsed(
+        new HTMLOpen(`<${callName}${htmlArgs.length > 0 ? " " : ""}${htmlArgs}>`),
+        ...functionBody,
+        new HTMLClose(callName)
+    );
 }
 
 let interpretCallId = 0;
 export default class Interpreter {
     constructor(inputStream) {
         this.inputStream = inputStream;
-        this.result = "";
+        this.result = new Parsed();
     }
 
     // Boundary is an optional parameter
@@ -128,7 +167,7 @@ export default class Interpreter {
 
     interpretText(char) {
         log(`Interpret text called with |${char.replace(/\n/g, "\\n")}|`);
-        this.result += char;
+        this.result.push(new PlainText(char));
     }
 
     callFunction(name, boundary, args) {
@@ -138,9 +177,9 @@ export default class Interpreter {
             let interpreter = new Interpreter(this.inputStream);
             let functionBody = interpreter.intelligentInterpret(boundary);
 
-            this.result += functionRegistry.exists(name) ?
+            this.result.push(functionRegistry.exists(name) ?
                 functionRegistry.get(name)(name, args, functionBody, interpreter) :
-                tag(name, args, functionBody, interpreter);
+                tag(name, args, functionBody, interpreter));
         }
         catch (e) {
             console.log(`In function ${name} (started at ${position}), at ${this.inputStream.char}:`);
