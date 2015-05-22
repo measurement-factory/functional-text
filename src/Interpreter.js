@@ -184,7 +184,15 @@ export default class Interpreter {
 
                 this.interpretFunctionCall(functionName);
             }
-            // Just text (one char at a time), not a function call
+            // Just text, not a function call after this point
+            else if (this.inputStream.peek().consume(/\w/)) {
+                Must(this.inputStream.consumeWord());
+                this.interpretText(this.inputStream.consumed);
+            }
+            else if (this.inputStream.peek().consume(/\s/)) {
+                Must(this.inputStream.consumeWhitespace());
+                this.interpretText(this.inputStream.consumed);
+            }
             else {
                 Must(this.inputStream.consumeChar());
                 this.interpretText(this.inputStream.consumed);
