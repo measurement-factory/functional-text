@@ -243,6 +243,10 @@ export default class Interpreter {
         let boundary;
 
         if (!afterSpace && peekingStream.consume(".")) {
+            // For the `.p.em emphasized` case, we think the user meant to wrap .em in .p, so we throw.
+            if (peekingStream.consumeFunctionName()) {
+                peekingStream.croak(`Did you forget a space before dot? The dot boundary cannot be followed by a word`);
+            }
             boundary = new BoundaryDot(peekingStream.consumed);
         }
         else if (peekingStream.consume(/\s/)) {

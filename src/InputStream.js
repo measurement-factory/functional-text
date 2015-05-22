@@ -90,7 +90,7 @@ export default class InputStream { /// XXX: Should have a context (file/function
         return (this.consumed && this.consumed.endsWith("\n")) || this.atEnd();
     }
     consumeFunctionCall() {
-        return this.consumeDot() && this.consumeWord();
+        return this.consumeDot() && this.consumeFunctionName();
     }
     consumeDot() {
         return this.consume(".");
@@ -103,6 +103,9 @@ export default class InputStream { /// XXX: Should have a context (file/function
     }
     consumeWord() {
         return this.consume(/\w+/);
+    }
+    consumeFunctionName() {
+        return this.consumeWord();
     }
     consumeChar() {
         return this.consume(/[\W\S]/);
