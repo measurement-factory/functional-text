@@ -272,7 +272,7 @@ export default class Interpreter {
             }
         }
         else if (peekingStream.consume(/[{}<>[\]`"'/@#$%|]/)) {
-            if (/}]>/.test(peekingStream.consumed)) {
+            if (/[}\]>]/.test(peekingStream.consumed)) {
                 peekingStream.croak(`Prohibited boundary ${peekingStream.consumed}`);
             }
             boundary = new BoundaryOther(peekingStream.consumed);
