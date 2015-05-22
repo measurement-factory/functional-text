@@ -1,7 +1,7 @@
 import {assert} from "chai";
 import {describe, it} from "mocha";
-import InputStream from "../interpreter/InputStream";
-import Interpreter from "../interpreter/Interpreter";
+import InputStream from "../InputStream";
+import Interpreter from "../Interpreter";
 
 // XXX: should define easy functions (.a) for test cases in this file
 

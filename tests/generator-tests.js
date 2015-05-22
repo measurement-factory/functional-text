@@ -2,8 +2,8 @@
 import {install} from "source-map-support";
 install();
 import carefulGenerator from "./careful-fxt-generator";
-import InputStream from "../interpreter/InputStream";
-import Interpreter from "../interpreter/Interpreter";
+import InputStream from "../InputStream";
+import Interpreter from "../Interpreter";
 import prettyHrTime from "pretty-hrtime";
 
 import fs from "fs";

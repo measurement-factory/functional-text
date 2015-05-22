@@ -5,8 +5,8 @@ import prettyHrTime from "pretty-hrtime";
 import fs from "fs";
 import {assert} from "chai";
 
-import InputStream from "../../lib/interpreter/InputStream";
-import Interpreter from "../../lib/interpreter/Interpreter";
+import InputStream from "../../lib/InputStream";
+import Interpreter from "../../lib/Interpreter";
 
 let seed = 1;
 let rng = seedrandom(seed);
