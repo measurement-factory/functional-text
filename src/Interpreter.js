@@ -102,11 +102,11 @@ function tag(callName, args, functionBody) {
             return `${argName}="${args.byName[argName].replace(/"/g, "\"")}"`;
         }).join(" ");
 
-    return new Parsed(
+    return [
         new HTMLOpen(`<${callName}${htmlArgs.length > 0 ? " " : ""}${htmlArgs}>`),
         ...functionBody,
         new HTMLClose(callName)
-    );
+    ];
 }
 
 let interpretCallId = 0;
@@ -177,9 +177,9 @@ export default class Interpreter {
             let interpreter = new Interpreter(this.inputStream);
             let functionBody = interpreter.intelligentInterpret(boundary);
 
-            this.result.push(functionRegistry.exists(name) ?
-                functionRegistry.get(name)(name, args, functionBody, interpreter) :
-                tag(name, args, functionBody, interpreter));
+            let func = functionRegistry.exists(name) ? functionRegistry.get(name) : tag;
+
+            this.result.push(...func(name, args, functionBody, interpreter));
         }
         catch (e) {
             console.log(`In function ${name} (started at ${position}), at ${this.inputStream.char}:`);
@@ -191,9 +191,9 @@ export default class Interpreter {
         let position = this.inputStream.char;
         log(`calling ${name}, with body: ${body}`);
         try {
-            return functionRegistry.exists(name) ?
-                functionRegistry.get(name)(name, args, body, this) :
-                tag(name, args, body, this);
+            let func = functionRegistry.exists(name) ? functionRegistry.get(name) : tag;
+
+            return func(name, args, body, this);
         }
         catch (e) {
             console.log(`In function ${name} (started at ${position}), at ${this.inputStream.char}:`);
