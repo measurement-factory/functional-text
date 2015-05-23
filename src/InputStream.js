@@ -40,6 +40,12 @@ export default class InputStream { /// XXX: Should have a context (file/function
     _log(...args) {
         log(`Stream ${this.id} at ${this.char}/${this.input.length}`, ...args);
     }
+    _updateConsumed(text) {
+        this.consumed = text;
+        this.char += text.length;
+        this._incrementHumanizedPosition();
+        this.sawFunctionCall = false;
+    }
     consume(condition) {
         this.consumed = null;
 
@@ -48,28 +54,20 @@ export default class InputStream { /// XXX: Should have a context (file/function
         if (typeof condition === "string") {
             if (this.input.startsWith(condition, this.char)) { // Starts with the condition
                 this._log(`consumed "${condition}" with "${condition}"`);
-                this.char += condition.length;
-                this.consumed = condition;
-                this._incrementHumanizedPosition();
-                this.sawFunctionCall = false;
+                this._updateConsumed(condition);
                 return true;
-            } else {
-                return false;
             }
         } else { // Assume that it is a regex
             // Will return even when the regex is empty (empty string match)
             let result = condition.exec(this.input.slice(this.char));
             if (result && result.index === 0) {
                 this._log(`consumed "${result[0].replace(/\n/g, "\\n")}" with ${condition}`);
-                this.char += result[0].length; // the length of the match
-                this.consumed = result[0];
-                this._incrementHumanizedPosition();
-                this.sawFunctionCall = false;
+                this._updateConsumed(result[0]);
                 return true;
-            } else {
-                return false;
             }
         }
+
+        return false;
     }
     sync(other) {
         this._log("syncing with", other.id);
